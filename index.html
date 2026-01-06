@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SÍNAPTIA - Test de Inteligencias Múltiples</title>
+  <meta name="description" content="Descubrí tus inteligencias múltiples con SÍNAPTIA. Test interactivo con resultados personalizados.">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState } = React;
+    const { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } = Recharts;
+
+    function TestSinaptia() {
+      const [currentQuestion, setCurrentQuestion] = useState(0);
+      const [answers, setAnswers] = useState(Array(16).fill([]));
+      const [showResults, setShowResults] = useState(false);
+
+      const inteligencias = {
+        linguistica: { nombre: 'Lingüística-Verbal', color: '#10B981', emoji: '🟢' },
+        logica: { nombre: 'Lógico-Matemática', color: '#3B82F6', emoji: '🔵' },
+        visual: { nombre: 'Visual-Espacial', color: '#F97316', emoji: '🟠' },
+        musical: { nombre: 'Musical-Rítmica', color: '#06B6D4', emoji: '🩵' },
+        corporal: { nombre: 'Corporal-Kinestésica', color: '#EF4444', emoji: '🔴' },
+        interpersonal: { nombre: 'Interpersonal', color: '#FACC15', emoji: '🟡' },
+        intrapersonal: { nombre: 'Intrapersonal', color: '#9333EA', emoji: '🟣' },
+        naturalista: { nombre: 'Naturalista', color: '#84CC16', emoji: '💚' }
+      };
+
+      const preguntas = [
+        {
+          tipo: 'linguistica',
+          titulo: '1/16 - Parte A',
+          pregunta: 'Marcá las afirmaciones que te representan:',
+          opciones: [
+            'Me encanta leer libros, artículos o cualquier texto en mi tiempo libre',
+            'Escribir me ayuda a organizar mis pensamientos y emociones',
+            'Disfruto jugando con palabras: rimas, juegos de palabras, poesía',
+            'Aprendo mejor cuando puedo explicar algo con mis propias palabras',
+            'Me resulta fácil recordar frases, citas o diálogos de películas/libros'
+          ]
+        },
+        {
+          tipo: 'linguistica',
+          titulo: '2/16 - Parte B',
+          pregunta: 'Marcá las situaciones que te describen:',
+          opciones: [
+            'Prefiero las instrucciones escritas antes que un video tutorial',
+            'Me gusta contar historias o anécdotas cuando estoy con amigos',
+            'Tengo facilidad para aprender idiomas o vocabulario nuevo',
+            'Disfruto debatir ideas y argumentar mi punto de vista',
+            'Me considero bueno/a redactando mensajes, emails o textos'
+          ]
+        },
+        {
+          tipo: 'logica',
+          titulo: '3/16 - Parte A',
+          pregunta: 'Marcá las afirmaciones que te representan:',
+          opciones: [
+            'Me gustan los acertijos, sudokus o juegos que requieren estrategia',
+            'Busco patrones o conexiones lógicas en todo lo que veo',
+            'Prefiero tener datos concretos antes de tomar una decisión',
+            'Me resulta fácil hacer cálculos mentales rápidos',
+            'Disfruto organizando información en categorías o listas'
+          ]
+        },
+        {
+          tipo: 'logica',
+          titulo: '4/16 - Parte B',
+          pregunta: 'Marcá las situaciones que te describen:',
+          opciones: [
+            'Me fascina entender cómo funcionan las cosas (mecanismos, sistemas)',
+            'Puedo seguir instrucciones complejas paso a paso sin problema',
+            'Me gusta resolver problemas usando la lógica más que la intuición',
+            'Soy bueno/a planificando proyectos con pasos claros y ordenados',
+            'Disfruto analizando causas y consecuencias de las situaciones'
+          ]
+        },
+        {
+          tipo: 'visual',
+          titulo: '5/16 - Parte A',
+          pregunta: 'Marcá las afirmaciones que te representan:',
+          opciones: [
+            'Tengo buena orientación y rara vez me pierdo en lugares nuevos',
+            'Pienso en imágenes y visualizo escenas mientras leo o escucho',
+            'Me gusta dibujar, pintar, diseñar o crear cosas visualmente',
+            'Puedo imaginar objetos desde diferentes ángulos en mi mente',
+            'Prefiero mapas, diagramas o gráficos antes que solo texto'
+          ]
+        },
+        {
+          tipo: 'visual',
+          titulo: '6/16 - Parte B',
+          pregunta: 'Marcá las situaciones que te describen:',
+          opciones: [
+            'Noto detalles visuales que otros pasan por alto (colores, formas)',
+            'Me resulta fácil armar muebles o puzzles mirando las piezas',
+            'Disfruto decorando espacios o eligiendo combinaciones de colores',
+            'Soy bueno/a para recordar caras, lugares o cómo llegar a sitios',
+            'Me atraen las artes visuales: fotografía, cine, arquitectura, diseño'
+          ]
+        },
+        {
+          tipo: 'musical',
+          titulo: '7/16 - Parte A',
+          pregunta: 'Marcá las afirmaciones que te representan:',
+          opciones: [
+            'Me doy cuenta cuando algo está desafinado o fuera de ritmo',
+            'Suelo tener canciones en la cabeza constantemente',
+            'Aprendo mejor cuando hay música de fondo o con canciones',
+            'Me muevo al ritmo de la música de forma natural',
+            'Puedo identificar diferentes instrumentos cuando escucho música'
+          ]
+        },
+        {
+          tipo: 'musical',
+          titulo: '8/16 - Parte B',
+          pregunta: 'Marcá las situaciones que te describen:',
+          opciones: [
+            'Toco algún instrumento o me gustaría aprender a hacerlo',
+            'Creo ritmos golpeando con los dedos, pies o cualquier objeto',
+            'La música cambia mi estado de ánimo de forma muy notoria',
+            'Puedo recordar melodías después de escucharlas pocas veces',
+            'Me gusta cantar, tararear o silbar mientras hago otras cosas'
+          ]
+        },
+        {
+          tipo: 'corporal',
+          titulo: '9/16 - Parte A',
+          pregunta: 'Marcá las afirmaciones que te representan:',
+          opciones: [
+            'Aprendo mejor cuando puedo moverme, tocar o hacer algo físico',
+            'Tengo buena coordinación corporal y control de mis movimientos',
+            'Me gusta hacer deportes, bailar o actividades físicas',
+            'Uso muchos gestos y movimientos cuando hablo',
+            'Me resulta difícil estar mucho tiempo quieto/a sentado/a'
+          ]
+        },
+        {
+          tipo: 'corporal',
+          titulo: '10/16 - Parte B',
+          pregunta: 'Marcá las situaciones que te describen:',
+          opciones: [
+            'Soy bueno/a con trabajos manuales: cocinar, reparar, crear cosas',
+            'Prefiero "aprender haciendo" antes que solo mirar o escuchar',
+            'Tengo conciencia de mi cuerpo en el espacio (equilibrio, postura)',
+            'Me relajo mejor haciendo actividad física que estando quieto/a',
+            'Disfruto actividades que requieren destreza manual o corporal'
+          ]
+        },
+        {
+          tipo: 'interpersonal',
+          titulo: '11/16 - Parte A',
+          pregunta: 'Marcá las afirmaciones que te representan:',
+          opciones: [
+            'Me doy cuenta fácilmente del estado de ánimo de otras personas',
+            'Disfruto trabajando en equipo más que solo/a',
+            'La gente suele pedirme consejos o buscarme para hablar',
+            'Puedo ver diferentes perspectivas en un conflicto',
+            'Me considero empático/a y me importan los sentimientos ajenos'
+          ]
+        },
+        {
+          tipo: 'interpersonal',
+          titulo: '12/16 - Parte B',
+          pregunta: 'Marcá las situaciones que te describen:',
+          opciones: [
+            'Tengo facilidad para hacer amigos nuevos o conectar con gente',
+            'Me gusta organizar encuentros, eventos o actividades grupales',
+            'Prefiero resolver problemas hablando y escuchando a todos',
+            'Soy bueno/a mediando conflictos o encontrando puntos en común',
+            'Aprendo mejor cuando puedo discutir ideas con otras personas'
+          ]
+        },
+        {
+          tipo: 'intrapersonal',
+          titulo: '13/16 - Parte A',
+          pregunta: 'Marcá las afirmaciones que te representan:',
+          opciones: [
+            'Me conozco bien: sé qué me motiva, asusta o emociona',
+            'Necesito tiempo a solas para procesar mis pensamientos',
+            'Llevo diario personal, medito o reflexiono regularmente',
+            'Tengo metas personales claras y trabajo en ellas',
+            'Entiendo mis emociones y puedo regularlas conscientemente'
+          ]
+        },
+        {
+          tipo: 'intrapersonal',
+          titulo: '14/16 - Parte B',
+          pregunta: 'Marcá las situaciones que te describen:',
+          opciones: [
+            'Prefiero trabajar solo/a en proyectos importantes',
+            'Soy independiente y confío en mi criterio personal',
+            'Me gusta analizar mis reacciones y patrones de comportamiento',
+            'Valoro la autenticidad y ser fiel a mis valores',
+            'Aprendo mejor cuando puedo conectar contenidos con mi experiencia'
+          ]
+        },
+        {
+          tipo: 'naturalista',
+          titulo: '15/16 - Parte A',
+          pregunta: 'Marcá las afirmaciones que te representan:',
+          opciones: [
+            'Me siento más tranquilo/a y conectado/a en espacios naturales',
+            'Noto detalles en plantas, animales o fenómenos naturales',
+            'Me preocupa el medio ambiente y la sostenibilidad',
+            'Disfruto cuidando plantas, mascotas o estar al aire libre',
+            'Puedo identificar diferentes especies de plantas, aves o animales'
+          ]
+        },
+        {
+          tipo: 'naturalista',
+          titulo: '16/16 - Parte B',
+          pregunta: 'Marcá las situaciones que te describen:',
+          opciones: [
+            'Prefiero actividades al aire libre antes que en espacios cerrados',
+            'Me fascina observar patrones en la naturaleza (estaciones, ciclos)',
+            'Tengo sensibilidad a cambios climáticos o del entorno natural',
+            'Me gusta aprender sobre ecosistemas, biología o ciencias naturales',
+            'Colecciono o clasifico elementos naturales (piedras, hojas, etc.)'
+          ]
+        }
+      ];
+
+      const handleCheckboxChange = (optionIndex) => {
+        const currentAnswers = [...answers[currentQuestion]];
+        const index = currentAnswers.indexOf(optionIndex);
+        
+        if (index > -1) {
+          currentAnswers.splice(index, 1);
+        } else {
+          currentAnswers.push(optionIndex);
+        }
+        
+        const newAnswers = [...answers];
+        newAnswers[currentQuestion] = currentAnswers;
+        setAnswers(newAnswers);
+      };
+
+      const calcularResultados = () => {
+        const scores = {
+          linguistica: 0,
+          logica: 0,
+          visual: 0,
+          musical: 0,
+          corporal: 0,
+          interpersonal: 0,
+          intrapersonal: 0,
+          naturalista: 0
+        };
+
+        preguntas.forEach((pregunta, index) => {
+          scores[pregunta.tipo] += answers[index].length;
+        });
+
+        Object.keys(scores).forEach(key => {
+          scores[key] = (scores[key] / 10) * 100;
+        });
+
+        return scores;
+      };
+
+      const getMensajePersonalizado = (scores) => {
+        const valores = Object.values(scores);
+        const equilibradas = valores.filter(v => v >= 40 && v <= 60).length;
+        const altas = valores.filter(v => v > 80).length;
+        const bajas = valores.filter(v => v < 30).length;
+
+        if (equilibradas >= 6) {
+          return "¡Tenés un perfil muy balanceado! Podés explorar todas las inteligencias con libertad.";
+        } else if (altas >= 1) {
+          const fortalezas = Object.keys(scores)
+            .filter(key => scores[key] > 80)
+            .map(key => inteligencias[key].nombre);
+          return `Tu perfil muestra fortalezas claras en ${fortalezas.join(' y ')}. ¡Aprovechalas y seguí expandiendo las demás!`;
+        } else if (bajas >= 2) {
+          return "Identificaste áreas con gran potencial de crecimiento. Los ejercicios te ayudarán a desarrollarlas.";
+        }
+        return "No hay perfiles buenos o malos. Todas las inteligencias son valiosas y entrenables. ¡Tu viaje neuroplástico empieza ahora! 🧠✨";
+      };
+
+      const getNivelInteligencia = (porcentaje) => {
+        if (porcentaje <= 30) return { texto: 'A desarrollar', color: 'text-red-600' };
+        if (porcentaje <= 60) return { texto: 'Equilibrada', color: 'text-yellow-600' };
+        return { texto: 'Fortaleza', color: 'text-green-600' };
+      };
+
+      if (showResults) {
+        const scores = calcularResultados();
+        const chartData = Object.keys(scores).map(key => ({
+          inteligencia: inteligencias[key].nombre.split('-')[0],
+          valor: Math.round(scores[key]),
+          fullMark: 100
+        }));
+
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4 md:p-8">
+            <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl p-6 md:p-10">
+              <div className="text-center mb-8">
+                <div className="mb-4">
+                  <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                    SÍNAPTIA
+                  </h1>
+                </div>
+                <p className="text-purple-700 text-base md:text-lg font-medium mb-2 italic">
+                  Creamos y estimulamos las conexiones que te transforman
+                </p>
+                <div className="text-gray-600 text-xs md:text-sm mb-4">
+                  <p>Balcarse 83 / Lobos / cel. 1156666000</p>
+                </div>
+                <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-2">
+                  ¡Test Completado!
+                </h2>
+                <p className="text-gray-600 text-lg">
+                  Tu Perfil de Inteligencias Múltiples
+                </p>
+              </div>
+
+              <div className="mb-8 bg-gray-50 rounded-2xl p-6">
+                <h3 className="text-xl font-bold text-center mb-6 text-gray-800">
+                  Tu Perfil de Inteligencias
+                </h3>
+                <ResponsiveContainer width="100%" height={400}>
+                  <RadarChart data={chartData}>
+                    <PolarGrid stroke="#e5e7eb" />
+                    <PolarAngleAxis 
+                      dataKey="inteligencia" 
+                      tick={{ fill: '#4b5563', fontSize: 12, fontWeight: 600 }}
+                    />
+                    <PolarRadiusAxis 
+                      angle={90} 
+                      domain={[0, 100]} 
+                      tick={{ fill: '#6b7280' }}
+                    />
+                    <Radar 
+                      name="Porcentaje" 
+                      dataKey="valor" 
+                      stroke="#8b5cf6" 
+                      fill="#8b5cf6" 
+                      fillOpacity={0.5}
+                      strokeWidth={3}
+                    />
+                    <Legend />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="mb-8">
+                <h3 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+                  📊 Tus Resultados
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.keys(scores).map(key => {
+                    const nivel = getNivelInteligencia(scores[key]);
+                    return (
+                      <div 
+                        key={key}
+                        className="bg-white border-2 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                        style={{ borderColor: inteligencias[key].color }}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl">{inteligencias[key].emoji}</span>
+                            <span className="font-semibold text-gray-800">
+                              {inteligencias[key].nombre}
+                            </span>
+                          </div>
+                          <span 
+                            className="text-2xl font-bold"
+                            style={{ color: inteligencias[key].color }}
+                          >
+                            {Math.round(scores[key])}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                          <div 
+                            className="h-3 rounded-full transition-all duration-1000"
+                            style={{ 
+                              width: `${scores[key]}%`,
+                              backgroundColor: inteligencias[key].color
+                            }}
+                          ></div>
+                        </div>
+                        <p className={`text-sm font-medium ${nivel.color}`}>
+                          {nivel.texto}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-6">
+                <p className="text-lg text-gray-800 text-center leading-relaxed">
+                  {getMensajePersonalizado(scores)}
+                </p>
+              </div>
+
+              <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                <h4 className="font-bold text-lg mb-3 text-gray-800">
+                  📖 Interpretación de niveles:
+                </h4>
+                <ul className="space-y-2 text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="text-red-600 font-bold">•</span>
+                    <span><strong className="text-red-600">0-30%:</strong> A desarrollar - Esta inteligencia tiene mucho potencial de crecimiento</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-yellow-600 font-bold">•</span>
+                    <span><strong className="text-yellow-600">31-60%:</strong> Equilibrada - Tenés una base sólida para seguir fortaleciendo</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">•</span>
+                    <span><strong className="text-green-600">61-100%:</strong> Fortaleza - Esta es una de tus inteligencias dominantes</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    const resultadosTexto = Object.keys(scores).map(key => 
+                      `${inteligencias[key].emoji} ${inteligencias[key].nombre}: ${Math.round(scores[key])}%`
+                    ).join('\n');
+                    
+                    const textoCompleto = `🧠 SÍNAPTIA - Mis Resultados\n\n${resultadosTexto}\n\n${getMensajePersonalizado(scores)}\n\nBalcarse 83 / Lobos / cel. 1156666000`;
+                    
+                    const blob = new Blob([textoCompleto], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'mis-resultados-sinaptia.txt';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                  }}
+                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl"
+                >
+                  💾 Descargar Mis Resultados
+                </button>
+
+                <button
+                  onClick={() => {
+                    const resultadosTexto = Object.keys(scores).map(key => 
+                      `${inteligencias[key].emoji} ${inteligencias[key].nombre}: ${Math.round(scores[key])}%`
+                    ).join('\n');
+                    
+                    const textoCompleto = `🧠 SÍNAPTIA - Mis Resultados de Inteligencias Múltiples\n\n${resultadosTexto}\n\n${getMensajePersonalizado(scores)}\n\n📍 Balcarse 83, Lobos\n📱 cel. 1156666000`;
+                    
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'Mis Resultados SÍNAPTIA',
+                        text: textoCompleto
+                      }).catch(() => {});
+                    } else {
+                      navigator.clipboard.writeText(textoCompleto);
+                      alert('✅ Resultados copiados al portapapeles. Podés pegarlos donde quieras!');
+                    }
+                  }}
+                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl"
+                >
+                  📤 Compartir Mis Resultados
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowResults(false);
+                    setCurrentQuestion(0);
+                    setAnswers(Array(16).fill([]));
+                  }}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
+                >
+                  🔄 Hacer el Test Nuevamente
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      const preguntaActual = preguntas[currentQuestion];
+      const progreso = ((currentQuestion + 1) / preguntas.length) * 100;
+      const tipoActual = preguntaActual.tipo;
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4 md:p-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                SÍNAPTIA
+              </h1>
+              <p className="text-purple-700 text-sm md:text-base font-medium italic mb-2">
+                Creamos y estimulamos las conexiones que te transforman
+              </p>
+              <div className="text-gray-600 text-xs mb-4">
+                <p>Balcarse 83 / Lobos / cel. 1156666000</p>
+              </div>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+                Descubrí tus Inteligencias Múltiples
+              </h2>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span className="font-semibold">{preguntaActual.titulo}</span>
+                <span>{Math.round(progreso)}% completado</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="h-3 rounded-full transition-all duration-300"
+                  style={{ 
+                    width: `${progreso}%`,
+                    backgroundColor: inteligencias[tipoActual].color
+                  }}
+                ></div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6">
+              <div 
+                className="inline-block px-4 py-2 rounded-full mb-6 text-white font-semibold"
+                style={{ backgroundColor: inteligencias[tipoActual].color }}
+              >
+                {inteligencias[tipoActual].emoji} {inteligencias[tipoActual].nombre}
+              </div>
+
+              <h2 className="text-xl md:text-2xl font-bold mb-6 text-gray-800">
+                {preguntaActual.pregunta}
+              </h2>
+
+              <div className="space-y-3">
+                {preguntaActual.opciones.map((opcion, index) => (
+                  <label
+                    key={index}
+                    className="flex items-start gap-3 p-4 rounded-xl border-2 border-gray-200 hover:border-purple-300 cursor-pointer transition-all hover:bg-purple-50 group"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={answers[currentQuestion].includes(index)}
+                      onChange={() => handleCheckboxChange(index)}
+                      className="mt-1 w-5 h-5 rounded accent-purple-600 cursor-pointer"
+                    />
+                    <span className="text-gray-700 group-hover:text-gray-900 leading-relaxed">
+                      {opcion}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              <div className="mt-4 text-center text-sm text-gray-500">
+                {answers[currentQuestion].length} {answers[currentQuestion].length === 1 ? 'opción seleccionada' : 'opciones seleccionadas'}
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              {currentQuestion > 0 && (
+                <button
+                  onClick={() => setCurrentQuestion(currentQuestion - 1)}
+                  className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-xl font-semibold hover:bg-gray-300 transition-colors"
+                >
+                  ← Anterior
+                </button>
+              )}
+              
+              {currentQuestion < preguntas.length - 1 ? (
+                <button
+                  onClick={() => setCurrentQuestion(currentQuestion + 1)}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg"
+                >
+                  Siguiente →
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowResults(true)}
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg"
+                >
+                  ✅ Ver Resultados
+                </button>
+              )}
+            </div>
+
+            <p className="text-center text-sm text-gray-500 mt-4">
+              Podés marcar todas las opciones que te representen
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<TestSinaptia />, document.getElementById('root'));
+  </script>
+</body>
+</html>
